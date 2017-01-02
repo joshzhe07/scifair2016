@@ -13,7 +13,7 @@ import numpy as np
 camera = PiCamera()
 camera.resolution = (640, 480)
 camera.framerate = 50
-camera.hflip = True
+camera.vflip = True
 
 rawCapture = PiRGBArray(camera, size=(640, 480))
 
