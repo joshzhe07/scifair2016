@@ -32,10 +32,12 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         #hsv = cv2.cvtColor(blur,cv2.COLOR_BGR2HSV)
         #thresh = cv2.inRange(hsv,np.array((0, 200, 200)), np.array((20, 255, 255)))
 
-        lower = np.array([27,10,143],dtype="uint8")
+        #lower = np.array([27,10,143],dtype="uint8")
+        lower = np.array([75,57,210],dtype="uint8")
         # lower = np.array([6, 6, 99],dtype="uint8")
         # upper = np.array([225,88,50], dtype="uint8")
-        upper = np.array([107,49,203], dtype="uint8")
+        #upper = np.array([107,49,203], dtype="uint8")
+        upper = np.array([115,97,250], dtype="uint8")
         # upper = np.array([25, 25, 250],dtype="uint8")
         thresh = cv2.inRange(blur, lower, upper)
         thresh2 = thresh.copy()
@@ -57,10 +59,10 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         cx,cy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
         #if best_cnt>1:
         cv2.circle(blur,(cx,cy),10,(0,255,0),-1)
+        #cv2.drawContours(image, [c], -1, (0, 255, 0), 2)
         # show the frame
         cv2.imshow("Frame", blur)
-        cv2.imshow(thresh2, blur)
-        #cv2.imshow('thresh',thresh2)
+        cv2.imshow('thresh',thresh2)
         key = cv2.waitKey(1) & 0xFF
 
 	# clear the stream in preparation for the next frame
