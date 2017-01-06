@@ -33,23 +33,31 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         #thresh = cv2.inRange(hsv,np.array((0, 200, 200)), np.array((20, 255, 255)))
 
         #lower = np.array([27,10,143],dtype="uint8")
-        lower = np.array([75,57,210],dtype="uint8")
+        #upper = np.array([107,49,203], dtype="uint8")
+
+        lower = np.array([27,10,123],dtype="uint8")
+        upper = np.array([107,49,223], dtype="uint8")
+
+        #lower = np.array([65,47,200],dtype="uint8")
+        #upper = np.array([125,107,260], dtype="uint8")
+
         # lower = np.array([6, 6, 99],dtype="uint8")
         # upper = np.array([225,88,50], dtype="uint8")
-        #upper = np.array([107,49,203], dtype="uint8")
-        upper = np.array([115,97,250], dtype="uint8")
+
+
         # upper = np.array([25, 25, 250],dtype="uint8")
         thresh = cv2.inRange(blur, lower, upper)
         thresh2 = thresh.copy()
 
         # find contours in the threshold image
-        image, contours,hierarchy = cv2.findContours(thresh,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
-
+        #image, contours,hierarchy = cv2.findContours(thresh,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+        image, contours,hierarchy = cv2.findContours(thresh,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
         # finding contour with maximum area and store it as best_cnt
         max_area = 0
         best_cnt = 1
         for cnt in contours:
                 area = cv2.contourArea(cnt)
+                #print "cnt",cnt
                 if area > max_area:
                         max_area = area
                         best_cnt = cnt
@@ -62,7 +70,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         #cv2.drawContours(image, [c], -1, (0, 255, 0), 2)
         # show the frame
         cv2.imshow("Frame", blur)
-        #cv2.imshow('thresh',thresh2)
+        cv2.imshow('thresh',thresh2)
+        #print "best_cnt",best_cnt,"area",max_area
         key = cv2.waitKey(1) & 0xFF
 
 	# clear the stream in preparation for the next frame
