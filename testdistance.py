@@ -62,7 +62,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         #cv2.drawContours(image, [c], -1, (0, 255, 0), 2)
         # show the frame
         cv2.imshow("Frame", blur)
-        cv2.imshow('thresh',thresh2)
+        #cv2.imshow('thresh',thresh2)
         key = cv2.waitKey(1) & 0xFF
 
 	# clear the stream in preparation for the next frame
