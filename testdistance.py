@@ -36,8 +36,14 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         #lower = np.array([27,10,143],dtype="uint8")
         #upper = np.array([107,49,203], dtype="uint8")
 
-        lower = np.array([17,1,123],dtype="uint8")
-        upper = np.array([117,59,223], dtype="uint8")
+        lower = np.array([17,1,100],dtype="uint8")
+        upper = np.array([200,59,225], dtype="uint8")
+
+        # lower = np.array([17,1,100],dtype="uint8")
+        # upper = np.array([117,59,223], dtype="uint8")
+
+        # lower = np.array([17,1,123],dtype="uint8")
+        # upper = np.array([117,59,223], dtype="uint8")
 
         #lower = np.array([65,47,200],dtype="uint8")
         #upper = np.array([125,107,260], dtype="uint8")
@@ -62,6 +68,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	          cnt = sorted(contours, key = cv2.contourArea, reverse = True)[0]
                   rect = np.int32(cv2.boxPoints(cv2.minAreaRect(cnt)))
                   cv2.drawContours(blur, [rect], -1, (0, 255, 0), 2)
+                  print "rect",rect
                   cv2.putText(blur,"%dpx %.2fft" % (rect[1][0],rect[1][0]/focallen), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1,(0,0,255),2)
         cv2.imshow("Frame", blur)
         cv2.imshow('thresh',thresh2)
