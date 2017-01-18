@@ -4,7 +4,7 @@ import threading
 import time
 import socket
 import sys
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 
 
 class udpServerThread (threading.Thread):
@@ -43,7 +43,6 @@ def udpclient(message):
 
     try:
         # Send data
-        print "%s: %s" % ("udpclient", time.ctime(time.time()))
         print >>sys.stderr, 'sending "%s"' % message
         sent = sock.sendto(message, server_address)
         # Receive response
@@ -69,54 +68,54 @@ udpServerT = udpServerThread(1, "UDP Server")
 udpServerT.setDaemon(True)  #when main exit, this thread exit
 udpServerT.start()
 
-GPIO.setwarnings(False)
-
-left_motor_1 = 6
-left_motor_2 = 5
-right_motor_1 = 12
-right_motor_2 = 13
-speed = 40
-READR = 27
-READL = 17
-
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(right_motor_1, GPIO.OUT)
-GPIO.setup(right_motor_2, GPIO.OUT)
-GPIO.setup(left_motor_1, GPIO.OUT)
-GPIO.setup(left_motor_2, GPIO.OUT)
-
-
-GPIO.setup (READR,GPIO.IN)
-GPIO.setup (READL,GPIO.IN)
-
-
-left_1 = GPIO.PWM(left_motor_1,100)
-left_2 = GPIO.PWM(left_motor_2,100)
-right_1 = GPIO.PWM(right_motor_1,100)
-right_2 = GPIO.PWM(right_motor_2,100)
+# GPIO.setwarnings(False)
+#
+# left_motor_1 = 6
+# left_motor_2 = 5
+# right_motor_1 = 12
+# right_motor_2 = 13
+# speed = 40
+# READR = 27
+# READL = 17
+#
+# GPIO.setmode(GPIO.BCM)
+# GPIO.setup(right_motor_1, GPIO.OUT)
+# GPIO.setup(right_motor_2, GPIO.OUT)
+# GPIO.setup(left_motor_1, GPIO.OUT)
+# GPIO.setup(left_motor_2, GPIO.OUT)
+#
+#
+# GPIO.setup (READR,GPIO.IN)
+# GPIO.setup (READL,GPIO.IN)
+#
+#
+# left_1 = GPIO.PWM(left_motor_1,100)
+# left_2 = GPIO.PWM(left_motor_2,100)
+# right_1 = GPIO.PWM(right_motor_1,100)
+# right_2 = GPIO.PWM(right_motor_2,100)
 
 
 
 while True:
-    # print "%s: %s" % (valueinmain, time.ctime(time.time()))
-    #time.sleep(1)  # Delay for 1 minute (60 seconds)
-    if GPIO.input(READR) == 0 and GPIO.input(READL) == 0:
-        left_1.start(speed)
-        left_2.start(speed*0)
-        right_1.start(speed)
-        right_2.start(speed*0)
-
-    if GPIO.input(READR) == 0 and GPIO.input(READL) == 1:
-        left_1.start(speed)
-        left_2.start(speed*0)
-        right_1.start(speed*0)
-        right_2.start(speed*0)
-
-    if GPIO.input(READR) == 1 and GPIO.input(READL) == 0:
-        left_1.start(speed*0)
-        left_2.start(speed*0)
-        right_1.start(speed)
-        right_2.start(speed*0)
+    print "%s: %s" % (valueinmain, time.ctime(time.time()))
+    time.sleep(1)  # Delay for 1 minute (60 seconds)
+    # if GPIO.input(READR) == 0 and GPIO.input(READL) == 0:
+    #     left_1.start(speed)
+    #     left_2.start(speed*0)
+    #     right_1.start(speed)
+    #     right_2.start(speed*0)
+    #
+    # if GPIO.input(READR) == 0 and GPIO.input(READL) == 1:
+    #     left_1.start(speed)
+    #     left_2.start(speed*0)
+    #     right_1.start(speed*0)
+    #     right_2.start(speed*0)
+    #
+    # if GPIO.input(READR) == 1 and GPIO.input(READL) == 0:
+    #     left_1.start(speed*0)
+    #     left_2.start(speed*0)
+    #     right_1.start(speed)
+    #     right_2.start(speed*0)
 
 
 print "Exiting Main Thread"
