@@ -68,7 +68,9 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	          cnt = sorted(contours, key = cv2.contourArea, reverse = True)[0]
                   rect = np.int32(cv2.boxPoints(cv2.minAreaRect(cnt)))
                   cv2.drawContours(blur, [rect], -1, (0, 255, 0), 2)
-                  print "rect",rect
+                #   print "rect",rect
+                #   print "%dpx %.2fft" % (rect[1][0],rect[1][0]/focallen)
+                  print "%dpx %dpx" % (rect[2][0]-rect[1][0],rect[0][1]-rect[1][1])
                   cv2.putText(blur,"%dpx %.2fft" % (rect[1][0],rect[1][0]/focallen), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1,(0,0,255),2)
         cv2.imshow("Frame", blur)
         cv2.imshow('thresh',thresh2)

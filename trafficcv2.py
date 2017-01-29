@@ -10,11 +10,14 @@ from picamera import PiCamera
 import time
 import sys
 
+flagdanger=False
+
 sys.path.append('/usr/local/lib/python2.7/site-packages')
 
 import cv2
 import numpy as np
 
+debugfile=open("/tmp/debugcv.txt","a")
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
 camera.resolution = (640, 480)
@@ -22,9 +25,29 @@ camera.framerate = 50
 camera.vflip = True
 
 rawCapture = PiRGBArray(camera, size=(640, 480))
+foundsign=False
 
 # allow the camera to warmup
 time.sleep(0.1)
+
+class udpClientThread (threading.Thread):
+    def __init__(self, threadID, name):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+    def run(self):
+        print "Starting " + self.name
+        sendMsg(self.name)
+
+def sendMsg(threadName):
+    # global flagdanger
+    while True:
+        time.sleep(0.05)
+        if foundsign==True:
+            udpclient("danger")
+        else:
+            udpclient("safe")
+
 
 class udpServerThread (threading.Thread):
     def __init__(self, threadID, name):
@@ -49,10 +72,13 @@ def udpserver(threadName):
         print >>sys.stderr, data
 
         if data:
+            global flagdanger
             sent = sock.sendto(data, address)
             print >>sys.stderr, 'sent %s bytes back to %s' % (sent, address)
-            if data=="sendtest":
-                udpclient("sendtest to another car")
+            # if data=="sendtest":
+            #     udpclient("sendtest to another car")
+            if data=="danger":
+                flagdanger=True
 
 
 def udpclient(message):
@@ -62,16 +88,16 @@ def udpclient(message):
 
     try:
         # Send data
-        print "%s: %s" % ("udpclient", time.ctime(time.time()))
-        print >>sys.stderr, 'sending "%s"' % message
+        # print "%s: %s" % ("udpclient", time.ctime(time.time()))
+        # print >>sys.stderr, 'sending "%s"' % message
         sent = sock.sendto(message, server_address)
         # Receive response
-        print >>sys.stderr, 'waiting to receive'
-        data, server = sock.recvfrom(4096)
-        print >>sys.stderr, 'received "%s"' % data
+        # print >>sys.stderr, 'waiting to receive'
+        # data, server = sock.recvfrom(4096)
+        # print >>sys.stderr, 'received "%s"' % data
 
     finally:
-        print >>sys.stderr, 'closing socket'
+        # print >>sys.stderr, 'closing socket'
         sock.close()
 
 
@@ -88,6 +114,10 @@ udpServerT = udpServerThread(1, "UDP Server")
 udpServerT.setDaemon(True)  #when main exit, this thread exit
 udpServerT.start()
 
+udpClientT = udpClientThread(2, "UDP Client ")
+udpClientT.setDaemon(True)  #when main exit, this thread exit
+udpClientT.start()
+
 GPIO.setwarnings(False)
 
 left_motor_1 = 6
@@ -95,6 +125,7 @@ left_motor_2 = 5
 right_motor_1 = 12
 right_motor_2 = 13
 speed = 40
+speed = 30
 READR = 27
 READL = 17
 
@@ -161,10 +192,20 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	          cnt = sorted(contours, key = cv2.contourArea, reverse = True)[0]
                   rect = np.int32(cv2.boxPoints(cv2.minAreaRect(cnt)))
                   cv2.drawContours(blur, [rect], -1, (0, 255, 0), 2)
-                  print "rect",rect
-                  cv2.putText(blur,"%dpx %.2fft" % (rect[1][0],rect[1][0]/focallen), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1,(0,0,255),2)
-        cv2.imshow("Frame", blur)
-        cv2.imshow('thresh',thresh2)
+                  #print "rect",rect
+                  #print "%dpx %.2fft" % (rect[1][0],rect[1][0]/focallen)
+                  #print "%dpx %dpx" % (rect[1][0],rect[1][1])
+                  width=rect[2][0]-rect[1][0]
+                  height=rect[0][1]-rect[1][1]
+                  print "%dpx %dpx" % (width,height)
+                #   debugfile.write(str(width)+';'+str(height) + "\n")
+
+                  if width>200:
+                      print "found the stop sign"
+                      foundsign=True
+                #   cv2.putText(blur,"%dpx %.2fft" % (rect[1][0],rect[1][0]/focallen), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1,(0,0,255),2)
+        #cv2.imshow("Frame", blur)
+        #cv2.imshow('thresh',thresh2)
         time.sleep(0.025)
         #print "best_cnt",best_cnt,"area",max_area
         key = cv2.waitKey(1) & 0xFF
@@ -187,14 +228,25 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         if GPIO.input(READR) == 0 and GPIO.input(READL) == 1:
             left_1.start(speed)
             left_2.start(speed*0)
-            right_1.start(speed*0)
+            right_1.start(speed*0.1)
             right_2.start(speed*0)
 
         if GPIO.input(READR) == 1 and GPIO.input(READL) == 0:
-            left_1.start(speed*0)
+            left_1.start(speed*0.1)
             left_2.start(speed*0)
             right_1.start(speed)
             right_2.start(speed*0)
 
+        if flagdanger==True and GPIO.input(READR) == 1 and GPIO.input(READL) == 1:
+            left_1.start(0)
+            left_2.start(0)
+            right_1.start(0)
+            right_2.start(0)
+
+        # if flagdanger==False and GPIO.input(READR) == 1 and GPIO.input(READL) == 1:
+        #     left_1.start(speed)
+        #     left_2.start(speed*0)
+        #     right_1.start(speed)
+        #     right_2.start(speed*0)
 
 print "Exiting Main Thread"
