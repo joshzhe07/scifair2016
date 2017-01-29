@@ -42,7 +42,7 @@ def udpserver(threadName):
             if data=="sendtest":
                 udpclient("sendtest to another car")
 
-class cvThread (threading.Thread):
+class cvServerThread (threading.Thread):
     def __init__(self, threadID, name):
         threading.Thread.__init__(self)
         self.threadID = threadID
@@ -85,10 +85,10 @@ def detectdistance(threadName):
             focallen=1.23
             if len(contours) > 0:
     	          cnt = sorted(contours, key = cv2.contourArea, reverse = True)[0]
-                      rect = np.int32(cv2.boxPoints(cv2.minAreaRect(cnt)))
-                      cv2.drawContours(blur, [rect], -1, (0, 255, 0), 2)
-                      print "rect",rect
-                      cv2.putText(blur,"%dpx %.2fft" % (rect[1][0],rect[1][0]/focallen), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1,(0,0,255),2)
+                  rect = np.int32(cv2.boxPoints(cv2.minAreaRect(cnt)))
+                  cv2.drawContours(blur, [rect], -1, (0, 255, 0), 2)
+                  print "rect",rect
+                  cv2.putText(blur,"%dpx %.2fft" % (rect[1][0],rect[1][0]/focallen), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1,(0,0,255),2)
             cv2.imshow("Frame", blur)
             cv2.imshow('thresh',thresh2)
             time.sleep(0.025)
@@ -135,6 +135,10 @@ car2host,car2port=sys.argv[3],int(sys.argv[4])
 udpServerT = udpServerThread(1, "UDP Server")
 udpServerT.setDaemon(True)  #when main exit, this thread exit
 udpServerT.start()
+cvServerT = cvServerThread(2, "cv thread")
+cvServerT.setDaemon(True)  #when main exit, this thread exit
+cvServerT.start()
+
 
 GPIO.setwarnings(False)
 
