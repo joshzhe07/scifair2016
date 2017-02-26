@@ -79,6 +79,8 @@ def udpserver(threadName):
             #     udpclient("sendtest to another car")
             if data=="danger":
                 flagdanger=True
+            if data=="safe":
+                flagdanger=False
 
 
 def udpclient(message):
