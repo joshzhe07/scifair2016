@@ -90,16 +90,16 @@ def udpclient(message):
 
     try:
         # Send data
-        print "%s: %s" % ("udpclient", time.ctime(time.time()))
+        #print "%s: %s" % ("udpclient", time.ctime(time.time()))
         print >>sys.stderr, 'sending "%s"' % message
         sent = sock.sendto(message, server_address)
         # Receive response
-        print >>sys.stderr, 'waiting to receive'
-        data, server = sock.recvfrom(4096)
-        print >>sys.stderr, 'received "%s"' % data
+        #print >>sys.stderr, 'waiting to receive'
+        #data, server = sock.recvfrom(4096)
+        #print >>sys.stderr, 'received "%s"' % data
 
     finally:
-        print >>sys.stderr, 'closing socket'
+        #print >>sys.stderr, 'closing socket'
         sock.close()
 
 
@@ -126,7 +126,7 @@ left_motor_1 = 6
 left_motor_2 = 5
 right_motor_1 = 12
 right_motor_2 = 13
-speed = 30
+speed = 40
 # speed = 30
 READR = 27
 READL = 17
